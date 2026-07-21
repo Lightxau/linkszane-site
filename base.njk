@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title or "LinksZane — Watch Videos Online" }}</title>
+<meta name="description" content="{{ description or 'LinksZane is a simple video hub — browse, watch, and discover related videos.' }}">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://linkszane.netlify.app{{ page.url }}">
+<meta property="og:type" content="{{ ogType or 'website' }}">
+<meta property="og:site_name" content="LinksZane">
+<meta property="og:title" content="{{ title or 'LinksZane — Watch Videos Online' }}">
+<meta property="og:description" content="{{ description or 'LinksZane is a simple video hub.' }}">
+<meta property="og:url" content="https://linkszane.netlify.app{{ page.url }}">
+<meta name="theme-color" content="#121214">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/" class="logo"><span class="links">Links</span><span class="zane">Zane</span></a>
+</div>
+
+<main>
+{{ content | safe }}
+</main>
+
+<footer class="site-footer">
+  <span>© {{ year }} LinksZane</span>
+</footer>
+
+</body>
+</html>

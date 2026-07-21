@@ -1,0 +1,26 @@
+---
+permalink: "sitemap.xml"
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://linkszane.netlify.app/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+{% for video in videos %}
+  <url>
+    <loc>https://linkszane.netlify.app/watch/{{ video.id }}/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+{% endfor %}
+{% for tag in tags %}
+  <url>
+    <loc>https://linkszane.netlify.app/tag/{{ tag | slugify }}/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+{% endfor %}
+</urlset>

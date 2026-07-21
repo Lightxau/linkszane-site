@@ -1,0 +1,29 @@
+---
+pagination:
+  data: tags
+  size: 1
+  alias: tag
+permalink: "tag/{{ tag | slugify }}/index.html"
+layout: base.njk
+eleventyComputed:
+  title: "{{ tag }} videos — LinksZane"
+  description: "Videos tagged {{ tag }} on LinksZane."
+---
+
+<div class="section-title">Tag: {{ tag }}</div>
+
+<div class="grid">
+  {% for video in videos %}
+    {% set videoTags = video.tags | tagList %}
+    {% if tag in videoTags %}
+      <a class="card" href="/watch/{{ video.id }}/">
+        <div class="card-meta">
+          <div class="card-title">{{ video.title or "Untitled" }}</div>
+          <div class="card-sub"><span>{{ video.views or 0 }} views</span></div>
+        </div>
+      </a>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<p><a class="back-link" href="/">← Back to browsing</a></p>

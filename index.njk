@@ -1,0 +1,20 @@
+---
+layout: base.njk
+title: "LinksZane — Watch Videos Online"
+description: "LinksZane is a simple video hub — browse, watch, and discover related videos."
+---
+
+<p class="section-title">Home</p>
+
+<div class="grid">
+  {% for video in videos %}
+    <a class="card" href="/watch/{{ video.id }}/">
+      <div class="card-meta">
+        <div class="card-title">{{ video.title or "Untitled" }}</div>
+        <div class="card-sub"><span>{{ video.views or 0 }} views</span></div>
+      </div>
+    </a>
+  {% else %}
+    <div class="empty">No videos yet.</div>
+  {% endfor %}
+</div>

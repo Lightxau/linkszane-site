@@ -1,0 +1,56 @@
+---
+pagination:
+  data: videos
+  size: 1
+  alias: video
+permalink: "watch/{{ video.id }}/index.html"
+layout: base.njk
+eleventyComputed:
+  title: "{{ video.title or 'Untitled' }} — LinksZane"
+  description: "Watch {{ video.title or 'this video' }} on LinksZane."
+  ogType: "video.other"
+---
+
+<article class="watch-page">
+  <div class="watch-frame">
+    {% if video.type == "video" %}
+      <video src="{{ video.src }}" controls preload="metadata"></video>
+    {% else %}
+      <iframe src="{{ video.src }}"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen loading="lazy"></iframe>
+    {% endif %}
+  </div>
+
+  <h1 class="watch-title">{{ video.title or "Untitled" }}</h1>
+  <p class="watch-meta"><span>{{ video.views or 0 }} views</span></p>
+
+  {% set tags = video.tags | tagList %}
+  {% if tags.length %}
+  <div class="watch-tags">
+    {% for tag in tags %}
+      <a class="tag-pill" href="/tag/{{ tag | slugify }}/">{{ tag }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if video.download_url %}
+  <a class="download-link" href="{{ video.download_url }}" target="_blank" rel="noopener noreferrer nofollow">⬇ Download video</a>
+  {% endif %}
+
+  <p class="section-title">More on LinksZane</p>
+  <div class="grid">
+    {% for other in videos %}
+      {% if other.id != video.id and loop.index <= 8 %}
+        <a class="card" href="/watch/{{ other.id }}/">
+          <div class="card-meta">
+            <div class="card-title">{{ other.title or "Untitled" }}</div>
+            <div class="card-sub"><span>{{ other.views or 0 }} views</span></div>
+          </div>
+        </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <p><a class="back-link" href="/">← Back to browsing</a></p>
+</article>
