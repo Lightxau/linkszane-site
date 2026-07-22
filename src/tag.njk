@@ -17,6 +17,14 @@ eleventyComputed:
     {% set videoTags = video.tags | tagList %}
     {% if tag in videoTags %}
       <a class="card" href="/watch/{{ video.id }}/">
+        <div class="frame-wrap">
+          {% if video.type == "video" %}
+            <video src="{{ video.src }}" muted preload="metadata"></video>
+          {% else %}
+            <iframe src="{{ video.src }}" loading="lazy"></iframe>
+          {% endif %}
+          <div class="play-badge"><span>▶</span></div>
+        </div>
         <div class="card-meta">
           <div class="card-title">{{ video.title or "Untitled" }}</div>
           <div class="card-sub"><span>{{ video.views or 0 }} views</span></div>
