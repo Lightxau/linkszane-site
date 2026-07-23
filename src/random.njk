@@ -1,0 +1,28 @@
+---
+layout: base.njk
+title: "Random — LinksZane"
+description: "Random videos on LinksZane."
+---
+<p class="section-title">Random</p>
+<div class="grid">
+  {% set shuffled = videos | shuffle %}
+  {% for video in shuffled %}
+    {% if loop.index <= 20 %}
+      <a class="card" href="/watch/{{ video.id }}/">
+        <div class="frame-wrap">
+          {% if video.type == "video" %}
+            <video src="{{ video.src }}" muted preload="metadata"></video>
+          {% else %}
+            <iframe src="{{ video.src }}" loading="lazy"></iframe>
+          {% endif %}
+          <div class="play-badge"><span>▶</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-title">{{ video.title or "Untitled" }}</div>
+          <div class="card-sub"><span>{{ video.views or 0 }} views</span></div>
+        </div>
+      </a>
+    {% endif %}
+  {% endfor %}
+</div>
+<p><a class="back-link" href="/">← Back to browsing</a></p>
