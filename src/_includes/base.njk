@@ -20,8 +20,34 @@
 <body>
 
 <div class="topbar">
+  <button class="menu-btn" id="menu-btn" aria-label="Open menu">⋮</button>
   <a href="/" class="logo"><span class="links">Links</span><span class="zane">Zane</span></a>
 </div>
+
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="logo"><span class="links">Links</span><span class="zane">Zane</span></div>
+    <button class="drawer-close" id="drawer-close" aria-label="Close menu">✕</button>
+  </div>
+  <div class="drawer-scroll">
+    <a class="drawer-item" href="/">Home</a>
+    <a class="drawer-item" href="/new/">New</a>
+    <button class="drawer-item" id="cat-toggle">
+      <span>Categories</span>
+      <span class="chevron" id="cat-chevron">›</span>
+    </button>
+    <div class="drawer-sub" id="cat-sub">
+      <a class="drawer-item" href="/latest/">Latest</a>
+      <a class="drawer-item" href="/most-viewed/">Most Viewed</a>
+      <a class="drawer-item" href="/random/">Random</a>
+      <a class="drawer-item" href="/tags/">All tags</a>
+    </div>
+  </div>
+  <div class="drawer-bottom">
+    <a class="drawer-item" href="/admin/">Admin</a>
+  </div>
+</nav>
 
 <main>
 {{ content | safe }}
@@ -30,6 +56,25 @@
 <footer class="site-footer">
   <span>© {{ year }} LinksZane</span>
 </footer>
+
+<script>
+  var menuBtn = document.getElementById('menu-btn');
+  var drawer = document.getElementById('drawer');
+  var overlay = document.getElementById('drawer-overlay');
+  var closeBtn = document.getElementById('drawer-close');
+  var catToggle = document.getElementById('cat-toggle');
+  var catSub = document.getElementById('cat-sub');
+  var catChevron = document.getElementById('cat-chevron');
+  function openDrawer(){ drawer.classList.add('open'); overlay.classList.add('open'); }
+  function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.remove('open'); }
+  menuBtn.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  catToggle.addEventListener('click', function(){
+    catSub.classList.toggle('open');
+    catChevron.classList.toggle('rot');
+  });
+</script>
 
 </body>
 </html>
