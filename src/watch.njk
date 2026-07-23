@@ -16,9 +16,7 @@ eleventyComputed:
     {% if video.type == "video" %}
       <video src="{{ video.src }}" controls preload="metadata"></video>
     {% else %}
-      <iframe src="{{ video.src }}"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen loading="lazy"></iframe>
+      <iframe src="{{ video.src }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     {% endif %}
   </div>
 
@@ -35,6 +33,34 @@ eleventyComputed:
   {% endif %}
 
   {% if video.download_url %}
+  <a class="download-link" href="{{ video.download_url }}" target="_blank" rel="noopener noreferrer nofollow">⬇ Download video</a>
+  {% endif %}
+
+  <p class="section-title">More on LinksZane</p>
+  <div class="grid">
+    {% set related = videos | relatedTo(video, 10) %}
+    {% for other in related %}
+      <a class="card" href="/watch/{{ other.id }}/">
+        <div class="frame-wrap">
+          {% if other.type == "video" %}
+            <video src="{{ other.src }}" muted preload="metadata"></video>
+          {% else %}
+            <iframe src="{{ other.src }}" loading="lazy"></iframe>
+          {% endif %}
+          <div class="play-badge"><span>▶</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-title">{{ other.title or "Untitled" }}</div>
+          <div class="card-sub"><span>{{ other.views or 0 }} views</span></div>
+        </div>
+      </a>
+    {% else %}
+      <div class="empty">No related videos yet.</div>
+    {% endfor %}
+  </div>
+
+  <p><a class="back-link" href="/">← Back to browsing</a></p>
+</article>  {% if video.download_url %}
   <a class="download-link" href="{{ video.download_url }}" target="_blank" rel="noopener noreferrer nofollow">⬇ Download video</a>
   {% endif %}
 
