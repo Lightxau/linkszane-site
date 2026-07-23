@@ -1,0 +1,27 @@
+---
+layout: base.njk
+title: "Latest — LinksZane"
+description: "Videos added in the last 72 hours on LinksZane."
+---
+<p class="section-title">Latest (last 72 hours)</p>
+<div class="grid">
+  {% for video in videos %}
+    {% if (video.created_at | hoursAgo) <= 72 %}
+      <a class="card" href="/watch/{{ video.id }}/">
+        <div class="frame-wrap">
+          {% if video.type == "video" %}
+            <video src="{{ video.src }}" muted preload="metadata"></video>
+          {% else %}
+            <iframe src="{{ video.src }}" loading="lazy"></iframe>
+          {% endif %}
+          <div class="play-badge"><span>▶</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-title">{{ video.title or "Untitled" }}</div>
+          <div class="card-sub"><span>{{ video.views or 0 }} views</span></div>
+        </div>
+      </a>
+    {% endif %}
+  {% endfor %}
+</div>
+<p><a class="back-link" href="/">← Back to browsing</a></p>
