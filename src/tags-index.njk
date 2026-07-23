@@ -1,0 +1,13 @@
+---
+layout: base.njk
+permalink: "tags/index.html"
+title: "All tags — LinksZane"
+description: "Browse all video tags on LinksZane."
+---
+<p class="section-title">All Tags</p>
+<div class="watch-tags">
+  {% for tag in tags %}
+    <a class="tag-pill" href="/tag/{{ tag | slugify }}/">{{ tag }}</a>
+  {% endfor %}
+</div>
+<p><a class="back-link" href="/">← Back to browsing</a></p>
