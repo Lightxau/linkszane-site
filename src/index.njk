@@ -2,12 +2,16 @@
 layout: base.njk
 title: "LinksZane — Watch Videos Online"
 description: "LinksZane is a simple video hub — browse, watch, and discover related videos."
+pagination:
+  data: videos
+  size: 20
+  alias: pageVideos
 ---
 
 <p class="section-title">Home</p>
 
 <div class="grid">
-  {% for video in videos %}
+  {% for video in pageVideos %}
     <a class="card" href="/watch/{{ video.id }}/">
       <div class="frame-wrap">
         {% if video.type == "video" %}
@@ -26,3 +30,11 @@ description: "LinksZane is a simple video hub — browse, watch, and discover re
     <div class="empty">No videos yet.</div>
   {% endfor %}
 </div>
+
+{% if pagination.hrefs.length > 1 %}
+<div class="pagination">
+  {% for href in pagination.hrefs %}
+    <a class="page-btn {% if loop.index0 == pagination.pageNumber %}active{% endif %}" href="{{ href }}">{{ loop.index }}</a>
+  {% endfor %}
+</div>
+{% endif %}
