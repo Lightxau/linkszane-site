@@ -1,0 +1,153 @@
+---
+layout: base.njk
+title: "Admin — LinksZane"
+description: "Manage LinksZane videos."
+---
+
+<div id="login-section">
+  <h1 class="watch-title">Admin Login</h1>
+  <p class="modal-error" id="login-error" style="display:none;"></p>
+  <input type="email" id="email-input" placeholder="Email" style="width:100%;margin-bottom:10px;padding:12px;background:transparent;border:1px solid var(--line);border-radius:6px;color:var(--paper);">
+  <input type="password" id="password-input" placeholder="Password" style="width:100%;margin-bottom:10px;padding:12px;background:transparent;border:1px solid var(--line);border-radius:6px;color:var(--paper);">
+  <button id="login-btn" style="background:var(--amber);color:var(--ink);border:none;border-radius:6px;padding:12px 22px;font-weight:600;cursor:pointer;">Log in</button>
+</div>
+
+<div id="manage-section" style="display:none;">
+  <div class="admin-bar open">
+    <span>● Logged in</span>
+    <button id="logout-btn">Log out</button>
+  </div>
+
+  <form id="add-form" class="open">
+    <input id="url-input" type="text" placeholder="Video URL (YouTube, Vimeo, Cloudinary, Backblaze, .mp4)" required>
+    <input id="title-input" type="text" placeholder="Title">
+    <input id="tags-input" type="text" placeholder="Tags, comma separated">
+    <input id="download-input" type="text" placeholder="Download link (optional)">
+    <button type="submit">Add video</button>
+  </form>
+  <p class="error" id="form-error"></p>
+  <p id="rebuild-msg" style="display:none;color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:13px;"></p>
+
+  <p class="section-title">Existing videos</p>
+  <div id="video-list"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  var SUPABASE_URL = "https://owuchppfijermqpuggfh.supabase.co";
+  var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93dWNocHBmaWplcm1xcHVnZ2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxOTgzNDMsImV4cCI6MjA5Nzc3NDM0M30._sp1ITPTxTjghaZLEGlxZCV203XNxVjWA4nirYMN_iU";
+  var TABLE = "linkszane_videos";
+  var BUILD_HOOK_URL = ""; // pasted in next step below
+
+  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+
+  var loginSection = document.getElementById('login-section');
+  var manageSection = document.getElementById('manage-section');
+  var loginError = document.getElementById('login-error');
+  var emailInput = document.getElementById('email-input');
+  var passwordInput = document.getElementById('password-input');
+  var loginBtn = document.getElementById('login-btn');
+  var logoutBtn = document.getElementById('logout-btn');
+  var form = document.getElementById('add-form');
+  var urlInput = document.getElementById('url-input');
+  var titleInput = document.getElementById('title-input');
+  var tagsInput = document.getElementById('tags-input');
+  var downloadInput = document.getElementById('download-input');
+  var formError = document.getElementById('form-error');
+  var rebuildMsg = document.getElementById('rebuild-msg');
+  var videoList = document.getElementById('video-list');
+
+  loginBtn.addEventListener('click', async function(){
+    loginError.style.display = 'none';
+    try {
+      var res = await supabase.auth.signInWithPassword({ email: emailInput.value.trim(), password: passwordInput.value });
+      if (res.error) throw res.error;
+      loginSection.style.display = 'none';
+      manageSection.style.display = 'block';
+      loadVideos();
+    } catch(e) {
+      loginError.textContent = 'Wrong email or password.';
+      loginError.style.display = 'block';
+    }
+  });
+
+  logoutBtn.addEventListener('click', async function(){
+    await supabase.auth.signOut();
+    manageSection.style.display = 'none';
+    loginSection.style.display = 'block';
+  });
+
+  function parseVideo(url){
+    url = (url || '').trim();
+    var m;
+    m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{6,})/);
+    if(m) return { type:'iframe', src:'https://www.youtube.com/embed/' + m[1] };
+    m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    if(m) return { type:'iframe', src:'https://player.vimeo.com/video/' + m[1] };
+    m = url.match(/customer-([a-z0-9]+)\.cloudflarestream\.com\/([a-zA-Z0-9]+)/i);
+    if(m) return { type:'iframe', src:'https://customer-' + m[1] + '.cloudflarestream.com/' + m[2] + '/iframe' };
+    if(/res\.cloudinary\.com\/.+\/video\/upload\//i.test(url)) return { type:'video', src:url };
+    if(/backblazeb2\.com\/file\//i.test(url)) return { type:'video', src:url };
+    if(/\.(mp4|webm|ogg)(\?.*)?$/i.test(url)) return { type:'video', src:url };
+    if(/^https?:\/\//i.test(url)) return { type:'iframe', src:url };
+    return null;
+  }
+
+  async function loadVideos(){
+    videoList.innerHTML = 'Loading…';
+    var res = await supabase.from(TABLE).select('*').order('created_at', { ascending:false });
+    if (res.error) { videoList.innerHTML = 'Failed to load videos.'; return; }
+    var videos = res.data || [];
+    if (videos.length === 0) { videoList.innerHTML = '<div class="empty">No videos yet.</div>'; return; }
+    videoList.innerHTML = '';
+    videos.forEach(function(v){
+      var row = document.createElement('div');
+      row.className = 'card';
+      row.style.padding = '12px 14px';
+      row.style.marginBottom = '10px';
+      row.innerHTML = '<div class="card-title">' + (v.title || 'Untitled') + '</div><div class="card-sub"><span>' + (v.views||0) + ' views</span></div>';
+      var removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-btn';
+      removeBtn.textContent = 'Remove';
+      removeBtn.style.marginTop = '10px';
+      removeBtn.addEventListener('click', async function(){
+        await supabase.from(TABLE).delete().eq('id', v.id);
+        triggerRebuild();
+        loadVideos();
+      });
+      row.appendChild(removeBtn);
+      videoList.appendChild(row);
+    });
+  }
+
+  function triggerRebuild(){
+    if (!BUILD_HOOK_URL) return;
+    rebuildMsg.style.display = 'block';
+    rebuildMsg.textContent = 'Rebuilding site — changes will appear in about a minute…';
+    fetch(BUILD_HOOK_URL, { method: 'POST' }).catch(function(){});
+  }
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    formError.style.display = 'none';
+    var parsed = parseVideo(urlInput.value);
+    if (!parsed) { formError.textContent = "Couldn't read that link — check the URL and try again."; formError.style.display = 'block'; return; }
+    var video = {
+      id: 'v' + Date.now() + Math.random().toString(36).slice(2,7),
+      title: titleInput.value.trim() || 'Untitled',
+      type: parsed.type, src: parsed.src,
+      tags: tagsInput.value.trim(),
+      download_url: downloadInput.value.trim() || null,
+      views: 0
+    };
+    var res = await supabase.from(TABLE).insert([video]);
+    if (res.error) { formError.textContent = 'Save failed: ' + res.error.message; formError.style.display = 'block'; return; }
+    urlInput.value=''; titleInput.value=''; tagsInput.value=''; downloadInput.value='';
+    triggerRebuild();
+    loadVideos();
+  });
+})();
+</script>
