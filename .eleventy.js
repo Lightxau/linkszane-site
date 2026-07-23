@@ -50,6 +50,22 @@ module.exports = function (eleventyConfig) {
   return {
     dir: { input: "src", output: "_site", includes: "_includes", data: "_data" }
   };
+};      return vTags.some(t => myTags.includes(t));
+    });
+    if (related.length < limit) {
+      const remaining = others.filter(v => !related.includes(v));
+      for (let i = remaining.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+      }
+      related = related.concat(remaining);
+    }
+    return related.slice(0, limit);
+  });
+
+  return {
+    dir: { input: "src", output: "_site", includes: "_includes", data: "_data" }
+  };
 };    });
     if (related.length < limit) {
       const remaining = others.filter(v => !related.includes(v));
