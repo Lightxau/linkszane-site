@@ -467,3 +467,9 @@ a.card, a.back-link {
 }
 a.card { display: flex; flex-direction: column; }
 .watch-page { max-width: 100%; }
+
+.ad-slot-wrap{
+  margin:16px 0;
+  text-align:center;
+  overflow:hidden;
+}
