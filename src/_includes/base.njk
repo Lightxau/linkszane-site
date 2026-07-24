@@ -32,6 +32,7 @@
   </div>
   <div class="drawer-scroll">
     <a class="drawer-item" href="/">Home</a>
+    <a class="drawer-item" href="/search/">Search</a>
     <a class="drawer-item" href="/new/">New</a>
     <button class="drawer-item" id="cat-toggle">
       <span>Categories</span>
@@ -51,6 +52,13 @@
 
 <main>
 {{ content | safe }}
+
+{% if not hideAds %}
+<div class="ad-slot-wrap" id="ad-bottom-wrap">
+  <script async="async" data-cfasync="false" src="https://pl30457159.effectivecpmnetwork.com/7a4749f2fcc9f38fd18f91f197cff35c/invoke.js"></script>
+  <div id="container-7a4749f2fcc9f38fd18f91f197cff35c"></div>
+</div>
+{% endif %}
 </main>
 
 <footer class="site-footer">
@@ -75,6 +83,11 @@
     catChevron.classList.toggle('rot');
   });
 </script>
+
+{% if not hideAds %}
+<script src="https://pl30457157.effectivecpmnetwork.com/aa/34/d8/aa34d86a69bd905d362d3565d0f24065.js"></script>
+<script src="https://pl30457158.effectivecpmnetwork.com/1b/12/e7/1b12e7a247db931010c6b04f48b97d4d.js"></script>
+{% endif %}
 
 </body>
 </html>
