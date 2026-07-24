@@ -1,0 +1,51 @@
+---
+layout: base.njk
+title: "Search — LinksZane"
+description: "Search videos on LinksZane."
+---
+<p class="section-title">Search</p>
+<input type="text" id="search-input" class="search-input" placeholder="Search videos by title or tag…">
+<div class="grid" id="search-results"></div>
+
+<script>
+(function(){
+  var input = document.getElementById('search-input');
+  var results = document.getElementById('search-results');
+  var allVideos = [];
+
+  fetch('/search-index.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){ allVideos = data; render(''); });
+
+  function render(term){
+    term = term.toLowerCase().trim();
+    results.innerHTML = '';
+    if(!term){
+      results.innerHTML = '<div class="empty">Start typing to search.</div>';
+      return;
+    }
+    var matches = allVideos.filter(function(v){
+      var titleMatch = (v.title||'').toLowerCase().includes(term);
+      var tagMatch = (v.tags||'').toLowerCase().includes(term);
+      return titleMatch || tagMatch;
+    });
+    if(matches.length === 0){
+      results.innerHTML = '<div class="empty">No videos match "' + term + '".</div>';
+      return;
+    }
+    matches.forEach(function(v){
+      var a = document.createElement('a');
+      a.className = 'card';
+      a.href = '/watch/' + v.id + '/';
+      var media = v.type === 'video'
+        ? '<video src="'+v.src+'" muted preload="metadata"></video>'
+        : '<iframe src="'+v.src+'" loading="lazy"></iframe>';
+      a.innerHTML = '<div class="frame-wrap">' + media + '<div class="play-badge"><span>▶</span></div></div>' +
+        '<div class="card-meta"><div class="card-title">'+v.title+'</div><div class="card-sub"><span>'+v.views+' views</span></div></div>';
+      results.appendChild(a);
+    });
+  }
+
+  input.addEventListener('input', function(){ render(input.value); });
+})();
+</script>
