@@ -14,7 +14,10 @@ pagination:
   {% for video in pageVideos %}
     <a class="card" href="/watch/{{ video.id }}/">
       <div class="frame-wrap">
-        {% if video.type == "video" %}
+        {% set thumb = video.thumbnail_url or (video | thumbnailUrl) %}
+        {% if thumb %}
+          <img src="{{ thumb }}" alt="{{ video.title or 'Untitled' }}" loading="lazy">
+        {% elif video.type == "video" %}
           <video src="{{ video.src }}" muted preload="metadata"></video>
         {% else %}
           <iframe src="{{ video.src }}" loading="lazy"></iframe>
