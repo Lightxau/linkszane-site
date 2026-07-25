@@ -37,9 +37,14 @@ description: "Search videos on LinksZane."
       var a = document.createElement('a');
       a.className = 'card';
       a.href = '/watch/' + v.id + '/';
-      var media = v.type === 'video'
-        ? '<video src="'+v.src+'" muted preload="metadata"></video>'
-        : '<iframe src="'+v.src+'" loading="lazy"></iframe>';
+      var media;
+      if (v.thumbnail) {
+        media = '<img src="'+v.thumbnail+'" alt="'+v.title+'" loading="lazy">';
+      } else if (v.type === 'video') {
+        media = '<video src="'+v.src+'" muted preload="metadata"></video>';
+      } else {
+        media = '<iframe src="'+v.src+'" loading="lazy"></iframe>';
+      }
       a.innerHTML = '<div class="frame-wrap">' + media + '<div class="play-badge"><span>▶</span></div></div>' +
         '<div class="card-meta"><div class="card-title">'+v.title+'</div><div class="card-sub"><span>'+v.views+' views</span></div></div>';
       results.appendChild(a);
