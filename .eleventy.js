@@ -47,6 +47,26 @@ module.exports = function (eleventyConfig) {
     return related.slice(0, limit);
   });
 
+  // Auto-generates a real thumbnail image URL for the video hosts that
+  // support it. Returns null for hosts with no reliable thumbnail service
+  // (Backblaze B2, plain .mp4 links) — those need a manual thumbnail_url.
+  eleventyConfig.addFilter("thumbnailUrl", (video) => {
+    if (!video || !video.src) return null;
+    const src = video.src;
+    let m = src.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
+    if (m) return `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg`;
+    m = src.match(/player\.vimeo\.com\/video\/(\d+)/);
+    if (m) return `https://vumbnail.com/${m[1]}.jpg`;
+    m = src.match(/customer-([a-z0-9]+)\.cloudflarestream\.com\/([a-zA-Z0-9]+)/i);
+    if (m) return `https://customer-${m[1]}.cloudflarestream.com/${m[2]}/thumbnails/thumbnail.jpg`;
+    if (/res\.cloudinary\.com\/.+\/video\/upload\//i.test(src)) {
+      return src.replace("/video/upload/", "/video/upload/so_0/").replace(/\.[a-zA-Z0-9]+$/, ".jpg");
+    }
+    return null;
+  });
+
+  eleventyConfig.addFilter("json", (v) => JSON.stringify(v));
+
   return {
     dir: { input: "src", output: "_site", includes: "_includes", data: "_data" }
   };
