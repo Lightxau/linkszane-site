@@ -11,6 +11,7 @@ module.exports = class {
       title: v.title || "Untitled",
       type: v.type,
       src: v.src,
+      thumbnail: v.thumbnail_url || null,
       tags: v.tags || "",
       views: v.views || 0
     }));
