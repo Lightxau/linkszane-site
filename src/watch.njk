@@ -9,12 +9,43 @@ eleventyComputed:
   title: "{{ video.title or 'Untitled' }} — LinksZane"
   description: "Watch {{ video.title or 'this video' }} on LinksZane."
   ogType: "video.other"
+  ogImage: "{{ video.thumbnail_url or (video | thumbnailUrl) }}"
 ---
 
 <article class="watch-page">
+  {% set thumb = video.thumbnail_url or (video | thumbnailUrl) %}
+  {% set uploadDate = video.created_at %}
+  {% set contentUrl = "" %}
+  {% set embedUrl = "" %}
+  {% if video.type == "video" %}
+    {% set contentUrl = video.src %}
+  {% else %}
+    {% set embedUrl = video.src %}
+  {% endif %}
+  {% set thumbArr = [] %}
+  {% if thumb %}
+    {% set thumbArr = [thumb] %}
+  {% endif %}
+  {% set videoJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": video.title or "Untitled",
+    "description": "Watch " + (video.title or "this video") + " on LinksZane.",
+    "thumbnailUrl": thumbArr,
+    "uploadDate": uploadDate,
+    "contentUrl": contentUrl,
+    "embedUrl": embedUrl,
+    "interactionStatistic": {
+      "@type": "InteractionCounter",
+      "interactionType": "https://schema.org/WatchAction",
+      "userInteractionCount": video.views or 0
+    }
+  } %}
+  <script type="application/ld+json">{{ videoJsonLd | json | safe }}</script>
+
   <div class="watch-frame">
     {% if video.type == "video" %}
-      <video src="{{ video.src }}" controls preload="metadata"></video>
+      <video src="{{ video.src }}" controls preload="metadata" {% if thumb %}poster="{{ thumb }}"{% endif %}></video>
     {% else %}
       <iframe src="{{ video.src }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     {% endif %}
@@ -42,7 +73,10 @@ eleventyComputed:
     {% for other in related %}
       <a class="card" href="/watch/{{ other.id }}/">
         <div class="frame-wrap">
-          {% if other.type == "video" %}
+          {% set otherThumb = other.thumbnail_url or (other | thumbnailUrl) %}
+          {% if otherThumb %}
+            <img src="{{ otherThumb }}" alt="{{ other.title or 'Untitled' }}" loading="lazy">
+          {% elif other.type == "video" %}
             <video src="{{ other.src }}" muted preload="metadata"></video>
           {% else %}
             <iframe src="{{ other.src }}" loading="lazy"></iframe>
@@ -56,52 +90,6 @@ eleventyComputed:
       </a>
     {% else %}
       <div class="empty">No related videos yet.</div>
-    {% endfor %}
-  </div>
-
-  <p><a class="back-link" href="/">← Back to browsing</a></p>
-</article>  {% if video.download_url %}
-  <a class="download-link" href="{{ video.download_url }}" target="_blank" rel="noopener noreferrer nofollow">⬇ Download video</a>
-  {% endif %}
-
-  <p class="section-title">More on LinksZane</p>
-  <div class="grid">
-    {% for other in videos %}
-      {% if other.id != video.id and loop.index <= 8 %}
-        <a class="card" href="/watch/{{ other.id }}/">
-          <div class="frame-wrap">
-            {% if other.type == "video" %}
-              <video src="{{ other.src }}" muted preload="metadata"></video>
-            {% else %}
-              <iframe src="{{ other.src }}" loading="lazy"></iframe>
-            {% endif %}
-            <div class="play-badge"><span>▶</span></div>
-          </div>
-          <div class="card-meta">
-            <div class="card-title">{{ other.title or "Untitled" }}</div>
-            <div class="card-sub"><span>{{ other.views or 0 }} views</span></div>
-          </div>
-        </a>
-      {% endif %}
-    {% endfor %}
-  </div>
-
-  <p><a class="back-link" href="/">← Back to browsing</a></p>
-</article>  {% if video.download_url %}
-  <a class="download-link" href="{{ video.download_url }}" target="_blank" rel="noopener noreferrer nofollow">⬇ Download video</a>
-  {% endif %}
-
-  <p class="section-title">More on LinksZane</p>
-  <div class="grid">
-    {% for other in videos %}
-      {% if other.id != video.id and loop.index <= 8 %}
-        <a class="card" href="/watch/{{ other.id }}/">
-          <div class="card-meta">
-            <div class="card-title">{{ other.title or "Untitled" }}</div>
-            <div class="card-sub"><span>{{ other.views or 0 }} views</span></div>
-          </div>
-        </a>
-      {% endif %}
     {% endfor %}
   </div>
 
