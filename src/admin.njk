@@ -24,6 +24,7 @@ hideAds: true
     <input id="title-input" type="text" placeholder="Title">
     <input id="tags-input" type="text" placeholder="Tags, comma separated">
     <input id="download-input" type="text" placeholder="Download link (optional)">
+    <input id="thumbnail-input" type="text" placeholder="Thumbnail image URL (optional — for Backblaze/mp4 links)">
     <button type="submit">Add video</button>
   </form>
   <p class="error" id="form-error"></p>
@@ -57,6 +58,7 @@ hideAds: true
   var titleInput = document.getElementById('title-input');
   var tagsInput = document.getElementById('tags-input');
   var downloadInput = document.getElementById('download-input');
+  var thumbnailInput = document.getElementById('thumbnail-input');
   var formError = document.getElementById('form-error');
   var rebuildMsg = document.getElementById('rebuild-msg');
   var videoList = document.getElementById('video-list');
@@ -142,6 +144,14 @@ hideAds: true
       type: parsed.type, src: parsed.src,
       tags: tagsInput.value.trim(),
       download_url: downloadInput.value.trim() || null,
+      views: 0
+    };
+      id: 'v' + Date.now() + Math.random().toString(36).slice(2,7),
+      title: titleInput.value.trim() || 'Untitled',
+      type: parsed.type, src: parsed.src,
+      tags: tagsInput.value.trim(),
+      download_url: downloadInput.value.trim() || null,
+      thumbnail_url: thumbnailInput.value.trim() || null,
       views: 0
     };
     var res = await supabase.from(TABLE).insert([video]);
