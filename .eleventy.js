@@ -47,9 +47,6 @@ module.exports = function (eleventyConfig) {
     return related.slice(0, limit);
   });
 
-  // Auto-generates a real thumbnail image URL for the video hosts that
-  // support it. Returns null for hosts with no reliable thumbnail service
-  // (Backblaze B2, plain .mp4 links) — those need a manual thumbnail_url.
   eleventyConfig.addFilter("thumbnailUrl", (video) => {
     if (!video || !video.src) return null;
     const src = video.src;
