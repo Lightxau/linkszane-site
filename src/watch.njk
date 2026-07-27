@@ -95,3 +95,15 @@ eleventyComputed:
 
   <p><a class="back-link" href="/">← Back to browsing</a></p>
 </article>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  var SUPABASE_URL = "https://owuchppfijermqpuggfh.supabase.co";
+  var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93dWNocHBmaWplcm1xcHVnZ2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxOTgzNDMsImV4cCI6MjA5Nzc3NDM0M30._sp1ITPTxTjghaZLEGlxZCV203XNxVjWA4nirYMN_iU";
+  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+  supabase.rpc('increment_views', { row_id: "{{ video.id }}" }).catch(function(){});
+})();
+</script>
