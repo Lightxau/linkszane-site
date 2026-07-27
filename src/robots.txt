@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://linkszane.netlify.app/sitemap.xml
+Sitemap: https://linkszane.fun/sitemap.xml
