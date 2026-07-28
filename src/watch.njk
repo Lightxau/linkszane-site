@@ -52,7 +52,7 @@ eleventyComputed:
   </div>
 
   <h1 class="watch-title">{{ video.title or "Untitled" }}</h1>
-  <p class="watch-meta"><span>{{ video.views or 0 }} views</span></p>
+  <p class="watch-meta"><span id="views-count">{{ video.views or 0 }} views</span></p>
 
   {% set tags = video.tags | tagList %}
   {% if tags.length %}
@@ -104,6 +104,14 @@ eleventyComputed:
   var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false }
   });
-  supabase.rpc('increment_views', { row_id: "{{ video.id }}" }).catch(function(){});
+  supabase.rpc('increment_views', { row_id: "{{ video.id }}" }).then(function(res){
+    if (res.error) { console.error('increment_views failed:', res.error.message); return; }
+    return supabase.from("linkszane_videos").select('views').eq('id', "{{ video.id }}").single();
+  }).then(function(res){
+    if (res && res.data) {
+      var el = document.getElementById('views-count');
+      if (el) el.textContent = (res.data.views || 0) + ' views';
+    }
+  }).catch(function(err){ console.error('view count update failed:', err); });
 })();
 </script>
