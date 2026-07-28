@@ -25,6 +25,8 @@ hideAds: true
     <input id="tags-input" type="text" placeholder="Tags, comma separated">
     <input id="download-input" type="text" placeholder="Download link (optional)">
     <input id="thumbnail-input" type="text" placeholder="Thumbnail image URL (optional — for Backblaze/mp4 links)">
+    <label style="display:block;margin:6px 0 2px;font-size:13px;color:var(--paper);opacity:.8;">Or upload a thumbnail from your gallery:</label>
+    <input id="thumbnail-file" type="file" accept="image/*" style="width:100%;margin-bottom:10px;">
     <button type="submit">Add video</button>
   </form>
   <p class="error" id="form-error"></p>
@@ -40,7 +42,7 @@ hideAds: true
   var SUPABASE_URL = "https://owuchppfijermqpuggfh.supabase.co";
   var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93dWNocHBmaWplcm1xcHVnZ2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxOTgzNDMsImV4cCI6MjA5Nzc3NDM0M30._sp1ITPTxTjghaZLEGlxZCV203XNxVjWA4nirYMN_iU";
   var TABLE = "linkszane_videos";
-  var BUILD_HOOK_URL = "https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/902317bf-57d2-4607-836a-13868e1751a6";
+  var BUILD_HOOK_URL = "https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/ac6664db-0fde-4f9e-9b1d-29c52b1fab49";
 
   var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false }
@@ -59,6 +61,7 @@ hideAds: true
   var tagsInput = document.getElementById('tags-input');
   var downloadInput = document.getElementById('download-input');
   var thumbnailInput = document.getElementById('thumbnail-input');
+  var thumbnailFile = document.getElementById('thumbnail-file');
   var formError = document.getElementById('form-error');
   var rebuildMsg = document.getElementById('rebuild-msg');
   var videoList = document.getElementById('video-list');
@@ -133,23 +136,51 @@ hideAds: true
     fetch(BUILD_HOOK_URL, { method: 'POST' }).catch(function(){});
   }
 
+  var THUMB_BUCKET = 'thumbnails';
+
+  async function uploadThumbnail(file, videoId){
+    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    var path = videoId + '.' + ext;
+    var res = await supabase.storage.from(THUMB_BUCKET).upload(path, file, { upsert: true });
+    if (res.error) throw res.error;
+    var pub = supabase.storage.from(THUMB_BUCKET).getPublicUrl(path);
+    return pub.data.publicUrl;
+  }
+
   form.addEventListener('submit', async function(e){
     e.preventDefault();
     formError.style.display = 'none';
     var parsed = parseVideo(urlInput.value);
     if (!parsed) { formError.textContent = "Couldn't read that link — check the URL and try again."; formError.style.display = 'block'; return; }
+
+    var videoId = 'v' + Date.now() + Math.random().toString(36).slice(2,7);
+    var thumbUrl = thumbnailInput.value.trim() || null;
+
+    if (thumbnailFile.files && thumbnailFile.files[0]) {
+      try {
+        formError.textContent = 'Uploading thumbnail…';
+        formError.style.display = 'block';
+        thumbUrl = await uploadThumbnail(thumbnailFile.files[0], videoId);
+        formError.style.display = 'none';
+      } catch (err) {
+        formError.textContent = 'Thumbnail upload failed: ' + (err.message || err);
+        formError.style.display = 'block';
+        return;
+      }
+    }
+
     var video = {
-      id: 'v' + Date.now() + Math.random().toString(36).slice(2,7),
+      id: videoId,
       title: titleInput.value.trim() || 'Untitled',
       type: parsed.type, src: parsed.src,
       tags: tagsInput.value.trim(),
       download_url: downloadInput.value.trim() || null,
-      thumbnail_url: thumbnailInput.value.trim() || null,
+      thumbnail_url: thumbUrl,
       views: 0
     };
     var res = await supabase.from(TABLE).insert([video]);
     if (res.error) { formError.textContent = 'Save failed: ' + res.error.message; formError.style.display = 'block'; return; }
-    urlInput.value=''; titleInput.value=''; tagsInput.value=''; downloadInput.value=''; thumbnailInput.value='';
+    urlInput.value=''; titleInput.value=''; tagsInput.value=''; downloadInput.value=''; thumbnailInput.value=''; thumbnailFile.value='';
     triggerRebuild();
     loadVideos();
   });
