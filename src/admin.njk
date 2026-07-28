@@ -127,7 +127,7 @@ hideAds: true
   }
 
   function triggerRebuild(){
-    if (!BUILD_HOOK_URL) return;
+    if (!BUILD_HOOK_URL || BUILD_HOOK_URL.indexOf('PASTE_YOUR') === 0) return;
     rebuildMsg.style.display = 'block';
     rebuildMsg.textContent = 'Rebuilding site — changes will appear in about a minute…';
     fetch(BUILD_HOOK_URL, { method: 'POST' }).catch(function(){});
@@ -144,19 +144,12 @@ hideAds: true
       type: parsed.type, src: parsed.src,
       tags: tagsInput.value.trim(),
       download_url: downloadInput.value.trim() || null,
-      views: 0
-    };
-      id: 'v' + Date.now() + Math.random().toString(36).slice(2,7),
-      title: titleInput.value.trim() || 'Untitled',
-      type: parsed.type, src: parsed.src,
-      tags: tagsInput.value.trim(),
-      download_url: downloadInput.value.trim() || null,
       thumbnail_url: thumbnailInput.value.trim() || null,
       views: 0
     };
     var res = await supabase.from(TABLE).insert([video]);
     if (res.error) { formError.textContent = 'Save failed: ' + res.error.message; formError.style.display = 'block'; return; }
-    urlInput.value=''; titleInput.value=''; tagsInput.value=''; downloadInput.value='';
+    urlInput.value=''; titleInput.value=''; tagsInput.value=''; downloadInput.value=''; thumbnailInput.value='';
     triggerRebuild();
     loadVideos();
   });
