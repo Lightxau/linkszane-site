@@ -54,6 +54,7 @@
 <main>
 {{ content | safe }}
 
+
 </main>
 
 <footer class="site-footer">
@@ -79,5 +80,28 @@
   });
 </script>
 
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  var cards = document.querySelectorAll('[data-vid]');
+  if (!cards.length) return;
+  var SUPABASE_URL = "https://owuchppfijermqpuggfh.supabase.co";
+  var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93dWNocHBmaWplcm1xcHVnZ2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxOTgzNDMsImV4cCI6MjA5Nzc3NDM0M30._sp1ITPTxTjghaZLEGlxZCV203XNxVjWA4nirYMN_iU";
+  var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+  var ids = Array.prototype.map.call(cards, function(el){ return el.getAttribute('data-vid'); });
+  supabase.from('linkszane_videos').select('id, views').in('id', ids).then(function(res){
+    if (res.error || !res.data) return;
+    var map = {};
+    res.data.forEach(function(row){ map[row.id] = row.views || 0; });
+    cards.forEach(function(el){
+      var id = el.getAttribute('data-vid');
+      if (map.hasOwnProperty(id)) el.textContent = map[id] + ' views';
+    });
+  }).catch(function(){});
+})();
+</script>
 </body>
 </html>
