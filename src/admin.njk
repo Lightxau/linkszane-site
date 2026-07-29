@@ -138,8 +138,18 @@ hideAds: true
   function triggerRebuild(){
     if (!BUILD_HOOK_URL || BUILD_HOOK_URL.indexOf('PASTE_YOUR') === 0) return;
     rebuildMsg.style.display = 'block';
-    rebuildMsg.textContent = 'Rebuilding site — changes will appear in about a minute…';
-    fetch(BUILD_HOOK_URL, { method: 'POST' }).catch(function(){});
+    rebuildMsg.textContent = 'Triggering rebuild…';
+    fetch(BUILD_HOOK_URL, { method: 'POST' }).then(function(res){
+      if (res.ok) {
+        rebuildMsg.textContent = 'Rebuild triggered — changes will appear in about a minute…';
+      } else {
+        rebuildMsg.textContent = 'Rebuild request failed (status ' + res.status + '). Trigger a deploy manually in Cloudflare.';
+        console.error('Deploy hook returned status', res.status);
+      }
+    }).catch(function(err){
+      rebuildMsg.textContent = 'Rebuild request failed to send (likely blocked by browser/CORS). Trigger a deploy manually in Cloudflare.';
+      console.error('Deploy hook fetch failed:', err);
+    });
   }
 
   var THUMB_BUCKET = 'thumbnails';
