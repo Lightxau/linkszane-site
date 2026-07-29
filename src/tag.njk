@@ -30,7 +30,7 @@ eleventyComputed:
         </div>
         <div class="card-meta">
           <div class="card-title">{{ video.title or "Untitled" }}</div>
-          <div class="card-sub"><span>{{ video.views or 0 }} views</span></div>
+          <div class="card-sub"><span data-vid="{{ video.id }}">{{ video.views or 0 }} views</span></div>
         </div>
       </a>
     {% endif %}
