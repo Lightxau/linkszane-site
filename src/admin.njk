@@ -120,6 +120,12 @@ hideAds: true
       removeBtn.textContent = 'Remove';
       removeBtn.style.marginTop = '10px';
       removeBtn.addEventListener('click', async function(){
+        if (v.thumbnail_url) {
+          try {
+            var parts = v.thumbnail_url.split('/' + THUMB_BUCKET + '/');
+            if (parts[1]) await supabase.storage.from(THUMB_BUCKET).remove([parts[1]]);
+          } catch (e) { console.error('thumbnail delete failed:', e); }
+        }
         await supabase.from(TABLE).delete().eq('id', v.id);
         triggerRebuild();
         loadVideos();
