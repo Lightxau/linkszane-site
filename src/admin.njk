@@ -102,6 +102,34 @@ hideAds: true
     return null;
   }
 
+  async function saveEdit(v, fields, editWrap, statusEl){
+    statusEl.textContent = '';
+    var updates = {
+      title: fields.title.value.trim() || 'Untitled',
+      tags: fields.tags.value.trim(),
+      download_url: fields.download.value.trim() || null
+    };
+
+    if (fields.thumbFile.files && fields.thumbFile.files[0]) {
+      try {
+        statusEl.textContent = 'Uploading thumbnail…';
+        updates.thumbnail_url = await uploadThumbnail(fields.thumbFile.files[0], v.id);
+      } catch (err) {
+        statusEl.textContent = 'Thumbnail upload failed: ' + (err.message || err);
+        return;
+      }
+    } else if (fields.thumbUrl.value.trim()) {
+      updates.thumbnail_url = fields.thumbUrl.value.trim();
+    }
+
+    statusEl.textContent = 'Saving…';
+    var res = await supabase.from(TABLE).update(updates).eq('id', v.id);
+    if (res.error) { statusEl.textContent = 'Save failed: ' + res.error.message; return; }
+    statusEl.textContent = 'Saved.';
+    triggerRebuild();
+    loadVideos();
+  }
+
   async function loadVideos(){
     videoList.innerHTML = 'Loading…';
     var res = await supabase.from(TABLE).select('*').order('created_at', { ascending:false });
@@ -115,10 +143,91 @@ hideAds: true
       row.style.padding = '12px 14px';
       row.style.marginBottom = '10px';
       row.innerHTML = '<div class="card-title">' + (v.title || 'Untitled') + '</div><div class="card-sub"><span>' + (v.views||0) + ' views</span></div>';
+
+      var btnRow = document.createElement('div');
+      btnRow.style.display = 'flex';
+      btnRow.style.gap = '8px';
+      btnRow.style.marginTop = '10px';
+
+      var editBtn = document.createElement('button');
+      editBtn.className = 'remove-btn';
+      editBtn.textContent = 'Edit';
+
       var removeBtn = document.createElement('button');
       removeBtn.className = 'remove-btn';
       removeBtn.textContent = 'Remove';
-      removeBtn.style.marginTop = '10px';
+
+      btnRow.appendChild(editBtn);
+      btnRow.appendChild(removeBtn);
+      row.appendChild(btnRow);
+
+      var editWrap = document.createElement('div');
+      editWrap.style.display = 'none';
+      editWrap.style.marginTop = '12px';
+      editWrap.style.paddingTop = '12px';
+      editWrap.style.borderTop = '1px solid var(--line)';
+
+      var titleField = document.createElement('input');
+      titleField.type = 'text'; titleField.placeholder = 'Title';
+      titleField.value = v.title || '';
+      titleField.style.cssText = 'width:100%;margin-bottom:8px;padding:10px;background:transparent;border:1px solid var(--line);border-radius:6px;color:var(--paper);';
+
+      var tagsField = document.createElement('input');
+      tagsField.type = 'text'; tagsField.placeholder = 'Tags, comma separated';
+      tagsField.value = v.tags || '';
+      tagsField.style.cssText = titleField.style.cssText;
+
+      var downloadField = document.createElement('input');
+      downloadField.type = 'text'; downloadField.placeholder = 'Download link (optional)';
+      downloadField.value = v.download_url || '';
+      downloadField.style.cssText = titleField.style.cssText;
+
+      var thumbUrlField = document.createElement('input');
+      thumbUrlField.type = 'text'; thumbUrlField.placeholder = 'Thumbnail image URL';
+      thumbUrlField.value = v.thumbnail_url || '';
+      thumbUrlField.style.cssText = titleField.style.cssText;
+
+      var thumbLabel = document.createElement('label');
+      thumbLabel.textContent = 'Or replace thumbnail from your gallery:';
+      thumbLabel.style.cssText = 'display:block;margin:6px 0 2px;font-size:13px;color:var(--paper);opacity:.8;';
+
+      var thumbFileField = document.createElement('input');
+      thumbFileField.type = 'file'; thumbFileField.accept = 'image/*';
+      thumbFileField.style.cssText = 'width:100%;margin-bottom:10px;';
+
+      var saveBtn = document.createElement('button');
+      saveBtn.textContent = 'Save changes';
+      saveBtn.type = 'button';
+
+      var cancelBtn = document.createElement('button');
+      cancelBtn.className = 'remove-btn';
+      cancelBtn.textContent = 'Cancel';
+      cancelBtn.style.marginLeft = '8px';
+
+      var statusEl = document.createElement('p');
+      statusEl.style.cssText = 'font-size:13px;color:var(--amber);font-family:"JetBrains Mono",monospace;margin-top:8px;';
+
+      editWrap.appendChild(titleField);
+      editWrap.appendChild(tagsField);
+      editWrap.appendChild(downloadField);
+      editWrap.appendChild(thumbUrlField);
+      editWrap.appendChild(thumbLabel);
+      editWrap.appendChild(thumbFileField);
+      editWrap.appendChild(saveBtn);
+      editWrap.appendChild(cancelBtn);
+      editWrap.appendChild(statusEl);
+      row.appendChild(editWrap);
+
+      editBtn.addEventListener('click', function(){
+        editWrap.style.display = editWrap.style.display === 'none' ? 'block' : 'none';
+      });
+      cancelBtn.addEventListener('click', function(){
+        editWrap.style.display = 'none';
+      });
+      saveBtn.addEventListener('click', function(){
+        saveEdit(v, { title: titleField, tags: tagsField, download: downloadField, thumbUrl: thumbUrlField, thumbFile: thumbFileField }, editWrap, statusEl);
+      });
+
       removeBtn.addEventListener('click', async function(){
         if (v.thumbnail_url) {
           try {
@@ -130,7 +239,6 @@ hideAds: true
         triggerRebuild();
         loadVideos();
       });
-      row.appendChild(removeBtn);
       videoList.appendChild(row);
     });
   }
