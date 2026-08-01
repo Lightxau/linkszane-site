@@ -25,6 +25,12 @@
   <a href="/" class="logo"><span class="links">Links</span><span class="zane">Zane</span></a>
 </div>
 
+{% if not hideAds %}
+<div id="ad-native-banner" style="padding:10px 14px;"></div>
+<script async="async" data-cfasync="false" src="https://pl30631751.effectivecpmnetwork.com/50221255d787b85fefeab7dbc49aa3ef/invoke.js"></script>
+<div id="container-50221255d787b85fefeab7dbc49aa3ef"></div>
+{% endif %}
+
 <div class="drawer-overlay" id="drawer-overlay"></div>
 <nav class="drawer" id="drawer">
   <div class="drawer-header">
@@ -52,9 +58,19 @@
 </nav>
 
 <main>
+{% if not hideAds %}
+<!-- AD SLOT: mid-page — paste a safe ad network's code here when ready -->
+<div id="ad-slot-mid" style="min-height:0;"></div>
+https://www.effectivecpmnetwork.com/kgq1i46iq?key=4af6c67eaeba749f0c484b673630b509
+{% endif %}
+
 {{ content | safe }}
 
-
+{% if not hideAds %}
+<!-- AD SLOT: end-of-page — paste a safe ad network's code here when ready -->
+<div id="ad-slot-bottom" style="min-height:0;"></div>
+<script src="https://pl30631749.effectivecpmnetwork.com/c1/7c/85/c17c85d6647552e8a97a0a472fdef602.js"></script>
+{% endif %}
 </main>
 
 <footer class="site-footer">
