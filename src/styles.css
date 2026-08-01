@@ -260,17 +260,7 @@
     pointer-events:none;
   }
   .play-badge{
-    position:absolute; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    background:rgba(0,0,0,0.15);
-  }
-  .play-badge span{
-    width:46px; height:46px;
-    border-radius:50%;
-    background:rgba(18,18,20,0.75);
-    color:var(--amber);
-    display:flex; align-items:center; justify-content:center;
-    font-size:16px;
+    display:none;
   }
   .card-meta{
     padding:12px 14px;
