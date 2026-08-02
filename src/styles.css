@@ -468,3 +468,46 @@ a.card { display: flex; flex-direction: column; }
   width:100%; height:100%;
   object-fit:cover;
 }
+.vpn-overlay{
+    position:fixed; inset:0; z-index:999;
+    background:rgba(0,0,0,0.75);
+    display:none; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .vpn-overlay.open{ display:flex; }
+  .vpn-modal{
+    background:var(--ink);
+    border:1px solid var(--amber-dim);
+    border-radius:14px;
+    padding:28px 24px;
+    max-width:360px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 10px 40px rgba(0,0,0,0.5);
+  }
+  .vpn-title{
+    font-family:'Archivo Black', sans-serif;
+    font-size:26px;
+    letter-spacing:1px;
+    color:var(--paper);
+    margin:0 0 14px;
+  }
+  .vpn-title span{
+    color:var(--amber);
+  }
+  .vpn-text{
+    color:var(--paper-dim);
+    font-size:14px;
+    line-height:1.5;
+    margin:0 0 22px;
+  }
+  .vpn-ok{
+    background:var(--amber);
+    color:var(--ink);
+    border:none;
+    border-radius:8px;
+    padding:12px 40px;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    }
