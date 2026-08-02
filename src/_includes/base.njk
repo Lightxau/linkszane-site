@@ -55,7 +55,6 @@
 {% if not hideAds %}
 <!-- AD SLOT: mid-page — paste a safe ad network's code here when ready -->
 <div id="ad-slot-mid" style="min-height:0;"></div>
-<script src="https://pl30631749.effectivecpmnetwork.com/c1/7c/85/c17c85d6647552e8a97a0a472fdef602.js"></script>
 {% endif %}
 
 {{ content | safe }}
@@ -63,6 +62,7 @@
 {% if not hideAds %}
 <!-- AD SLOT: end-of-page — paste a safe ad network's code here when ready -->
 <div id="ad-slot-bottom" style="min-height:0;"></div>
+<script src="https://pl30631749.effectivecpmnetwork.com/c1/7c/85/c17c85d6647552e8a97a0a472fdef602.js"></script>
 {% endif %}
 </main>
 
@@ -70,6 +70,16 @@
 <div id="ad-native-banner" style="padding:10px 14px;"></div>
 <script async="async" data-cfasync="false" src="https://pl30631751.effectivecpmnetwork.com/50221255d787b85fefeab7dbc49aa3ef/invoke.js"></script>
 <div id="container-50221255d787b85fefeab7dbc49aa3ef"></div>
+{% endif %}
+
+{% if not hideAds %}
+<div class="vpn-overlay" id="vpn-overlay">
+  <div class="vpn-modal">
+    <h2 class="vpn-title">CONNECT <span>VPN</span></h2>
+    <p class="vpn-text">If any video was not playing, please connect VPN and it will start playing properly.</p>
+    <button class="vpn-ok" id="vpn-ok-btn">OK</button>
+  </div>
+</div>
 {% endif %}
 
 <footer class="site-footer">
@@ -93,8 +103,22 @@
     catSub.classList.toggle('open');
     catChevron.classList.toggle('rot');
   });
-</script>
 
+  var vpnOverlay = document.getElementById('vpn-overlay');
+  if (vpnOverlay) {
+    var shown = false;
+    try { shown = sessionStorage.getItem('vpnBannerShown') === '1'; } catch(e) {}
+    if (!shown) {
+      vpnOverlay.classList.add('open');
+      try { sessionStorage.setItem('vpnBannerShown', '1'); } catch(e) {}
+      var hideVpn = function(){ vpnOverlay.classList.remove('open'); };
+      document.getElementById('vpn-ok-btn').addEventListener('click', hideVpn);
+      setTimeout(hideVpn, 5000);
+    } else {
+      vpnOverlay.remove();
+    }
+  }
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
