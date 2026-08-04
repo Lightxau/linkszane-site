@@ -23,6 +23,7 @@ hideAds: true
     <input id="url-input" type="text" placeholder="Video URL (YouTube, Vimeo, Cloudinary, Backblaze, .mp4)" required>
     <input id="title-input" type="text" placeholder="Title">
     <input id="tags-input" type="text" placeholder="Tags, comma separated">
+    <input id="duration-input" type="text" placeholder="Duration (e.g. 12:34 or 1:02:15)">
     <input id="download-input" type="text" placeholder="Download link (optional)">
     <input id="thumbnail-input" type="text" placeholder="Thumbnail image URL (optional — for Backblaze/mp4 links)">
     <label style="display:block;margin:6px 0 2px;font-size:13px;color:var(--paper);opacity:.8;">Or upload a thumbnail from your gallery:</label>
@@ -59,6 +60,7 @@ hideAds: true
   var urlInput = document.getElementById('url-input');
   var titleInput = document.getElementById('title-input');
   var tagsInput = document.getElementById('tags-input');
+  var durationInput = document.getElementById('duration-input');
   var downloadInput = document.getElementById('download-input');
   var thumbnailInput = document.getElementById('thumbnail-input');
   var thumbnailFile = document.getElementById('thumbnail-file');
@@ -107,6 +109,7 @@ hideAds: true
     var updates = {
       title: fields.title.value.trim() || 'Untitled',
       tags: fields.tags.value.trim(),
+      duration: fields.duration.value.trim() || null,
       download_url: fields.download.value.trim() || null
     };
 
@@ -177,6 +180,11 @@ hideAds: true
       tagsField.value = v.tags || '';
       tagsField.style.cssText = titleField.style.cssText;
 
+      var durationField = document.createElement('input');
+      durationField.type = 'text'; durationField.placeholder = 'Duration (e.g. 12:34)';
+      durationField.value = v.duration || '';
+      durationField.style.cssText = titleField.style.cssText;
+
       var downloadField = document.createElement('input');
       downloadField.type = 'text'; downloadField.placeholder = 'Download link (optional)';
       downloadField.value = v.download_url || '';
@@ -209,6 +217,7 @@ hideAds: true
 
       editWrap.appendChild(titleField);
       editWrap.appendChild(tagsField);
+      editWrap.appendChild(durationField);
       editWrap.appendChild(downloadField);
       editWrap.appendChild(thumbUrlField);
       editWrap.appendChild(thumbLabel);
@@ -225,7 +234,7 @@ hideAds: true
         editWrap.style.display = 'none';
       });
       saveBtn.addEventListener('click', function(){
-        saveEdit(v, { title: titleField, tags: tagsField, download: downloadField, thumbUrl: thumbUrlField, thumbFile: thumbFileField }, editWrap, statusEl);
+        saveEdit(v, { title: titleField, tags: tagsField, duration: durationField, download: downloadField, thumbUrl: thumbUrlField, thumbFile: thumbFileField }, editWrap, statusEl);
       });
 
       removeBtn.addEventListener('click', async function(){
@@ -298,13 +307,14 @@ hideAds: true
       title: titleInput.value.trim() || 'Untitled',
       type: parsed.type, src: parsed.src,
       tags: tagsInput.value.trim(),
+      duration: durationInput.value.trim() || null,
       download_url: downloadInput.value.trim() || null,
       thumbnail_url: thumbUrl,
       views: 0
     };
     var res = await supabase.from(TABLE).insert([video]);
     if (res.error) { formError.textContent = 'Save failed: ' + res.error.message; formError.style.display = 'block'; return; }
-    urlInput.value=''; titleInput.value=''; tagsInput.value=''; downloadInput.value=''; thumbnailInput.value=''; thumbnailFile.value='';
+    urlInput.value=''; titleInput.value=''; tagsInput.value=''; durationInput.value=''; downloadInput.value=''; thumbnailInput.value=''; thumbnailFile.value='';
     triggerRebuild();
     loadVideos();
   });
