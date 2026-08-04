@@ -81,11 +81,11 @@ eleventyComputed:
           {% else %}
             <iframe src="{{ other.src }}" loading="lazy"></iframe>
           {% endif %}
-          <div class="play-badge"><span>▶</span></div>
+          <span class="thumb-badge thumb-badge-views"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg><span data-vid="{{ other.id }}">{{ other.views or 0 }}</span></span>
+          {% if other.duration %}<span class="thumb-badge thumb-badge-duration"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>{{ other.duration }}</span>{% endif %}
         </div>
         <div class="card-meta">
           <div class="card-title">{{ other.title or "Untitled" }}</div>
-          <div class="card-sub"><span data-vid="{{ other.id }}">{{ other.views or 0 }} views</span></div>
         </div>
       </a>
     {% else %}
