@@ -55,6 +55,7 @@
 {% if not hideAds %}
 <!-- AD SLOT: mid-page — paste a safe ad network's code here when ready -->
 <div id="ad-slot-mid" style="min-height:0;"></div>
+<script src="https://pl30631749.effectivecpmnetwork.com/c1/7c/85/c17c85d6647552e8a97a0a472fdef602.js"></script>
 {% endif %}
 
 {{ content | safe }}
@@ -62,7 +63,6 @@
 {% if not hideAds %}
 <!-- AD SLOT: end-of-page — paste a safe ad network's code here when ready -->
 <div id="ad-slot-bottom" style="min-height:0;"></div>
-<script src="https://pl30631749.effectivecpmnetwork.com/c1/7c/85/c17c85d6647552e8a97a0a472fdef602.js"></script>
 {% endif %}
 </main>
 
@@ -137,7 +137,7 @@
     res.data.forEach(function(row){ map[row.id] = row.views || 0; });
     cards.forEach(function(el){
       var id = el.getAttribute('data-vid');
-      if (map.hasOwnProperty(id)) el.textContent = map[id] + ' views';
+      if (map.hasOwnProperty(id)) el.textContent = map[id];
     });
   }).catch(function(){});
 })();
