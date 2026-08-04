@@ -251,7 +251,7 @@
     width:100%;
     aspect-ratio:16/9;
     background:#000;
-    border-radius:10px;
+    border-radius:0;
     overflow:hidden;
     transition:transform .15s ease;
   }
@@ -289,9 +289,9 @@
   .card-title{
     font-size:14px;
     font-weight:500;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    white-space:normal;
+    overflow-wrap:break-word;
+    line-height:1.35;
   }
   .card-sub{
     display:none;
