@@ -1,4 +1,4 @@
-  :root{
+:root{
     --ink:#121214;
     --paper:#EFEBE3;
     --paper-dim:#c9c5ba;
@@ -238,21 +238,24 @@
     gap:20px;
   }
   .card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:10px;
-    overflow:hidden;
+    background:transparent;
+    border:none;
+    border-radius:0;
+    overflow:visible;
     display:flex;
     flex-direction:column;
     cursor:pointer;
   }
-  .card:hover{ border-color:var(--amber-dim); }
   .frame-wrap{
     position:relative;
     width:100%;
     aspect-ratio:16/9;
     background:#000;
+    border-radius:10px;
+    overflow:hidden;
+    transition:transform .15s ease;
   }
+  .card:hover .frame-wrap{ transform:translateY(-2px); }
   .frame-wrap iframe, .frame-wrap video{
     position:absolute; inset:0;
     width:100%; height:100%;
@@ -262,8 +265,26 @@
   .play-badge{
     display:none;
   }
+  .thumb-badge{
+    position:absolute;
+    bottom:7px;
+    display:flex;
+    align-items:center;
+    gap:4px;
+    background:rgba(0,0,0,0.72);
+    color:#fff;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    font-weight:500;
+    padding:3px 7px;
+    border-radius:5px;
+    line-height:1;
+  }
+  .thumb-badge svg{ width:12px; height:12px; flex-shrink:0; }
+  .thumb-badge-views{ left:7px; }
+  .thumb-badge-duration{ right:7px; }
   .card-meta{
-    padding:12px 14px;
+    padding:10px 2px 0;
   }
   .card-title{
     font-size:14px;
@@ -271,14 +292,9 @@
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    margin-bottom:4px;
   }
   .card-sub{
-    font-family:'JetBrains Mono',monospace;
-    font-size:11px;
-    color:#6b675e;
-    display:flex;
-    gap:10px;
+    display:none;
   }
   .card-actions{
     display:flex; justify-content:flex-end;
@@ -468,7 +484,8 @@ a.card { display: flex; flex-direction: column; }
   width:100%; height:100%;
   object-fit:cover;
 }
-.vpn-overlay{
+
+  .vpn-overlay{
     position:fixed; inset:0; z-index:999;
     background:rgba(0,0,0,0.75);
     display:none; align-items:center; justify-content:center;
@@ -510,4 +527,4 @@ a.card { display: flex; flex-direction: column; }
     font-weight:700;
     font-size:15px;
     cursor:pointer;
-    }
+  }
