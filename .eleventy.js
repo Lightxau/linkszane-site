@@ -4,6 +4,11 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/styles.css");
   eleventyConfig.addPassthroughCopy("src/robots.txt");
   eleventyConfig.addPassthroughCopy("src/googlef3c2fcf7d137ee4f.html");
+  eleventyConfig.addPassthroughCopy("src/favicon.ico");
+  eleventyConfig.addPassthroughCopy("src/favicon-48x48.png");
+  eleventyConfig.addPassthroughCopy("src/apple-touch-icon.png");
+  eleventyConfig.addPassthroughCopy("src/icon-192.png");
+  eleventyConfig.addPassthroughCopy("src/icon-512.png");
 
   eleventyConfig.addFilter("tagList", (tags) => {
     return (tags || "").split(",").map((t) => t.trim()).filter(Boolean);
@@ -63,6 +68,22 @@ module.exports = function (eleventyConfig) {
   });
 
   eleventyConfig.addFilter("json", (v) => JSON.stringify(v));
+
+  eleventyConfig.addFilter("isoDuration", (str) => {
+    if (!str) return null;
+    const parts = String(str).trim().split(":").map(p => parseInt(p, 10));
+    if (parts.some(isNaN) || parts.length === 0) return null;
+    let h = 0, m = 0, s = 0;
+    if (parts.length === 3) { [h, m, s] = parts; }
+    else if (parts.length === 2) { [m, s] = parts; }
+    else if (parts.length === 1) { [s] = parts; }
+    else { return null; }
+    let out = "PT";
+    if (h) out += `${h}H`;
+    if (m) out += `${m}M`;
+    if (s || (!h && !m)) out += `${s}S`;
+    return out;
+  });
 
   return {
     dir: { input: "src", output: "_site", includes: "_includes", data: "_data" }
