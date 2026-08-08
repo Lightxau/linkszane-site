@@ -33,6 +33,7 @@ eleventyComputed:
     "description": "Watch " + (video.title or "this video") + " on LinksZane.",
     "thumbnailUrl": thumbArr,
     "uploadDate": uploadDate,
+    "duration": video.duration | isoDuration,
     "contentUrl": contentUrl,
     "embedUrl": embedUrl,
     "interactionStatistic": {
@@ -43,6 +44,7 @@ eleventyComputed:
   } %}
   <script type="application/ld+json">{{ videoJsonLd | json | safe }}</script>
 
+  <p class="watch-vpn-note">If the video is not showing or playing, connect VPN.</p>
   <div class="watch-frame">
     {% if video.type == "video" %}
       <video src="{{ video.src }}" controls preload="metadata" {% if thumb %}poster="{{ thumb }}"{% endif %}></video>
